@@ -48,8 +48,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    if (optind > argc + 1) {
-        printf("too many arguments, abort.");
+    if (optind < argc - 1) {
+        printf("too many arguments, abort.\n");
         return 0;
     }
     
@@ -78,7 +78,7 @@ int list_dir(char *dirpath, bool flag_a, bool flag_l, bool flag_R,
 
     DIR *dir = opendir(dirpath);
     if (dir == NULL) {
-        printf("bad directory name, abort.");
+        printf("bad directory name, abort.\n");
         return FUCKUP;
     }
     bool empty = true, first_line = true;

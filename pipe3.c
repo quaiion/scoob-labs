@@ -67,7 +67,7 @@ void stream_print_files(int desc) {
     FILE *file = fdopen(desc, "r");
     unsigned namebuf_size = 0, namebuf_cap = DEFAULT_NAMEBUF_CAP;
     char *namebuf = (char *)malloc(DEFAULT_NAMEBUF_CAP * sizeof(char));
-    for (char c = fgetc(file); c != EOF; c = fgetc(file)) {
+    for (char c = fgetc(file); c != '\n'; c = fgetc(file)) {
         if (c == ' ') {
             namebuf[namebuf_size] = '\0';
         } else {
@@ -80,7 +80,7 @@ void stream_print_files(int desc) {
         }
     }
 
-    buf[namebuf_size] = buf[namebuf_size + 1] = buf[namebuf_size + 2] = '\0';
+    namebuf[namebuf_size] = namebuf[namebuf_size + 1] = namebuf[namebuf_size + 2] = '\0';
 
     char *bufptr = namebuf;
     while (*bufptr != '\0') {

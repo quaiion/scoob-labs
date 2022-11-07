@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
-#include <assert.h>
 
 static inline long double func(long double x) {
-    assert(x * x < (long double)4);
     return sqrt(4 - x * x);
 }
 

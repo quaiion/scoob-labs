@@ -15,9 +15,9 @@ int main() {
         return 0;
     }
 
-    long double seglen = (long double)2 / nsegs, integ = 0;
     clock_t beg = clock();
     
+    long double seglen = (long double)2 / nsegs, integ = 0;
     long double path, prepath;
     for (path = seglen, prepath = 0; nsegs > 1; prepath = path, path += seglen, nsegs -= 1) {
         integ += (func(path) + func(prepath)) * seglen / (long double)2;

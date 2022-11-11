@@ -10,9 +10,13 @@ static inline void step_state(const double *src_arr, double *dest_arr,
                               long nseg_to_go);
 
 int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        printf("fuck you, fix the input\n");
+        return 0;
+    }
     long nseg = atol(argv[1]) + 2;
     double dur = atof(argv[2]);
-    if (argc != 3 || dur < 0 || nseg <= 2) {
+    if (dur < 0 || nseg <= 2) {
         printf("fuck you, fix the input\n");
         return 0;
     }

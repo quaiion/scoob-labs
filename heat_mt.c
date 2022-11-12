@@ -73,7 +73,7 @@ double *heat_up(double *state_arr0, double *state_arr1,
         thr_arr[i].arr1_start = arr1_ptr;
         pthread_create(&thr_arr[i].thr, NULL, thread_go, thr_arr + i);
     }
-    thr_arr[nthr_to_go].nseg_to_go = (nseg_to_go - 1) % nthr;
+    thr_arr[nthr_to_go].nseg_to_go = thr_seg + (nseg_to_go - 1) % nthr;
     thr_arr[nthr_to_go].nstep = nstep;
     thr_arr[nthr_to_go].arr0_start = arr0_ptr;
     thr_arr[nthr_to_go].arr1_start = arr1_ptr;

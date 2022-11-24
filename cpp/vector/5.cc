@@ -10,15 +10,14 @@ int main() {
     }
     std::cout << std::endl;
 
+    std::sort(vec.begin(), vec.end());
     unsigned nO = 0;
-    for (auto symb : vec[1]) {
+    for (auto symb : vec[0]) {
         if (symb == 'o') {
             nO += 1;
         }
     }
     std::cout << nO << std::endl;
-
-    std::sort(vec.begin(), vec.end());
     for (unsigned i = 0; i < 3; ++i) {
         std::cout << vec[i] << std::endl;
     }

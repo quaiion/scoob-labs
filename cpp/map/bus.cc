@@ -22,23 +22,18 @@ int main() {
         std::cin >> com;
         if (com == "NEW_BUS") {
             new_bus(busbase, stopbase);
-            break;
         } else if (com == "BUSES_FOR_STOP") {
             std::string name{};
             std::cin >> name;
             buses_for_stop(stopbase, name);
-            break;
         } else if (com == "STOPS_FOR_BUS") {
             std::string name{};
             std::cin >> name;
             stops_for_bus(busbase, stopbase, name);
-            break;
         } else if (com == "ALL_BUSES") {
             all_buses(busbase);
-            break;
         } else {
             std::cout << "wrong input, command skipped" << std::endl;
-            break;
         }
     }
     return 0;

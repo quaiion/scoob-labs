@@ -1,8 +1,8 @@
 #include <iostream>
 
-static inline int eucl_gcd(int val1, int val2) {
+static inline long eucl_gcd(long val1, long val2) {
     val1 = abs(val1); val2 = abs(val2);
-    int rem = val1 % val2;
+    long rem = val1 % val2;
     while (rem != 0) {
         val1 = val2;
         val2 = rem;
@@ -13,48 +13,147 @@ static inline int eucl_gcd(int val1, int val2) {
 
 class rational {
 public:
-    rational(int numerator_, int denominator_) {
-        if (denominator_ == 0) {
+    rational(long numer_, long denom_) {
+        if (denom_ == 0) {
             throw exception();
         }
-        numerator = numerator_;
-        denominator = denominator_;
+        numer = numer_;
+        denom = denom_;
         ensign();
         shrink();
     }
     rational() {
-        numerator = 0;
-        denominator = 1;
+        numer = 0;
+        denom = 1;
     }
-    int get_numerator() {
-        return numerator;
+
+    long get_numer() {
+        return numer;
     }
-    int get_denominator() {
-        return denominator;
+    long get_denom() {
+        return denom;
     }
-    void set_numerator(int numerator_) {
-        numerator = numerator_;
+    void set_numer(long numer_) {
+        numer = numer_;
         shrink();
     }
-    void set_denominator(int denominator_) {
-        if (denominator_ == 0) {
+    void set_denom(long denom_) {
+        if (denom_ == 0) {
             throw exception();
         }
-        denominator = denominator_;
+        denom = denom_;
         ensign();
         shrink();
     }
+
+    rational operator+(rational smnd) {
+        rational sum{};
+        sum.numer = numer * smnd.denom +
+                        smnd.numer * denom;
+        sum.denom = denom * smnd.denom;
+        sum.shrink();
+        return sum;
+    }
+    rational operator-(rational sbtd) {
+        rational dif{};
+        dif.numer = numer * sbtd.denom -
+                        sbtd.numer * denom;
+        dif.denom = denom * sbtd.denom;
+        dif.shrink();
+        return dif;
+    }
+    rational operator*(rational mtpr) {
+        rational prod{};
+        prod.numer = numer * mtpr.numer;
+        prod.denom = denom * mtpr.denom;
+        prod.shrink();
+        return prod;
+    }
+    rational operator/(rational div) {
+        rational quot{};
+        quot.numer = numer * div.denom;
+        quot.denom = denom * div.numer;
+        quot.ensign();
+        quot.shrink();
+        return quot;
+    }
+    rational operator=(rational val) {
+        numer = val.numer;
+        denom = val.denom;
+        return val;
+    }
+
+    bool operator==(rational val) {
+        if (val.numer == numer && val.denom == denom) {
+            return true;
+        }
+        return false;
+    }
+    bool operator>(rational val) {
+        if (numer * val.denom > val.numer * denom) {
+            return true;
+        }
+        return false;
+    }
+    bool operator<(rational val) {
+        if (numer * val.denom < val.numer * denom) {
+            return true;
+        }
+        return false;
+    }
+    bool operator>=(rational val) {
+        rational valif (numer * val.denom >= val.numer * denom) {
+            return true;
+        }
+        return false;
+    }
+    bool operator<=(rational val) {
+        if (numer * val.denom <= val.numer * denom) {
+            return true;
+        }
+        return false;
+    }
+    
+    rational& operator++() {
+        numer += denom;
+        return *this;
+    }
+    rational operator++(int) {
+        rational oldval = *this;
+        numer += denom;
+        return oldval;
+    }
+    rational& operator--() {
+        numer -= denom;
+        return *this;
+    }
+    rational operator--(int) {
+        rational oldval = *this;
+        numer -= denom;
+        return oldval;
+    }
+
+    friend std::istream& operator>>(std::istream& os, rational val);
+    friend std::ostream& operator<<(std::ostream& os, rational val);
+
 private:
-    int numerator, denominator;
+    long numer, denom;
     void shrink() {
-        int gcd = eucl_gcd(numerator, denominator);
-        numerator /= gcd;
-        denominator /= gcd;
+        long gcd = eucl_gcd(numer, denom);
+        numer /= gcd;
+        denom /= gcd;
     }
     void ensign() {
-        if (denominator < 0) {
-            numerator *= -1;
-            denominator *= -1;
+        if (denom < 0) {
+            numer *= -1;
+            denom *= -1;
         }
     }
 };
+
+std::istream& operator>>(std::istream& is, rational val) {
+    return is >> val.numer >> val.denom;
+}
+std::ostream& operator<<(std::ostream& os, rational val) {
+    return os << val.numer << '/' << val.denom << std::endl;
+}

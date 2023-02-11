@@ -15,7 +15,7 @@ class rational {
 public:
     rational(long numer_, long denom_) {
         if (denom_ == 0) {
-            throw exception();
+            throw std::exception();
         }
         numer = numer_;
         denom = denom_;
@@ -39,7 +39,7 @@ public:
     }
     void set_denom(long denom_) {
         if (denom_ == 0) {
-            throw exception();
+            throw std::exception();
         }
         denom = denom_;
         ensign();
@@ -102,7 +102,7 @@ public:
         return false;
     }
     bool operator>=(rational val) {
-        rational valif (numer * val.denom >= val.numer * denom) {
+        if (numer * val.denom >= val.numer * denom) {
             return true;
         }
         return false;
@@ -133,8 +133,8 @@ public:
         return oldval;
     }
 
-    friend std::istream& operator>>(std::istream& os, rational val);
-    friend std::ostream& operator<<(std::ostream& os, rational val);
+    friend std::istream& operator>>(std::istream& os, rational& val);
+    friend std::ostream& operator<<(std::ostream& os, const rational& val);
 
 private:
     long numer, denom;
@@ -151,9 +151,35 @@ private:
     }
 };
 
-std::istream& operator>>(std::istream& is, rational val) {
-    return is >> val.numer >> val.denom;
+std::istream& operator>>(std::istream& is, rational& val) {
+    long num = 0, den = 0;
+    is >> num >> den;
+    val.numer = num;
+    val.set_denom(den);
+    return is;
 }
-std::ostream& operator<<(std::ostream& os, rational val) {
-    return os << val.numer << '/' << val.denom << std::endl;
+std::ostream& operator<<(std::ostream& os, const rational& val) {
+    return os << val.numer << '/' << val.denom;
+}
+
+int main() {
+    rational a(1, 2), b(5, 8), c;
+    std::cout << a << ' ' << b << ' ' << c << std::endl;
+    std::cin >> c;
+    std::cout << c << std::endl;
+    std::cout << a + b << ' ' << a - b << ' ' << a * b << ' ' << a / b << ' ' << std::endl;
+    if (a > b) {
+        std::cout << "a" << std::endl;
+    }
+    if (b == c) {
+        std::cout << "c" << std::endl;
+    }
+    if (a <= b) {
+        std::cout << "b" << std::endl;
+    }
+    rational d = b;
+    std::cout << d << std::endl;
+    std::cout << --a << ' ' << b++ << ' ';
+    std::cout << b << std::endl;
+    return 0;
 }

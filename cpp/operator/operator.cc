@@ -11,9 +11,9 @@ static inline long eucl_gcd(long val1, long val2) {
     return val2;
 }
 
-class rational {
+class rational_t {
 public:
-    rational(long numer_, long denom_) {
+    rational_t(long numer_, long denom_) {
         if (denom_ == 0) {
             throw std::exception();
         }
@@ -22,7 +22,7 @@ public:
         ensign();
         shrink();
     }
-    rational() {
+    rational_t() {
         numer = 0;
         denom = 1;
     }
@@ -46,95 +46,95 @@ public:
         shrink();
     }
 
-    rational operator+(rational smnd) {
-        rational sum{};
+    rational_t operator+(rational_t smnd) {
+        rational_t sum{};
         sum.numer = numer * smnd.denom +
                         smnd.numer * denom;
         sum.denom = denom * smnd.denom;
         sum.shrink();
         return sum;
     }
-    rational operator-(rational sbtd) {
-        rational dif{};
+    rational_t operator-(rational_t sbtd) {
+        rational_t dif{};
         dif.numer = numer * sbtd.denom -
                         sbtd.numer * denom;
         dif.denom = denom * sbtd.denom;
         dif.shrink();
         return dif;
     }
-    rational operator*(rational mtpr) {
-        rational prod{};
+    rational_t operator*(rational_t mtpr) {
+        rational_t prod{};
         prod.numer = numer * mtpr.numer;
         prod.denom = denom * mtpr.denom;
         prod.shrink();
         return prod;
     }
-    rational operator/(rational div) {
-        rational quot{};
+    rational_t operator/(rational_t div) {
+        rational_t quot{};
         quot.numer = numer * div.denom;
         quot.denom = denom * div.numer;
         quot.ensign();
         quot.shrink();
         return quot;
     }
-    rational operator=(rational val) {
+    rational_t operator=(rational_t val) {
         numer = val.numer;
         denom = val.denom;
         return val;
     }
 
-    bool operator==(rational val) {
+    bool operator==(rational_t val) {
         if (val.numer == numer && val.denom == denom) {
             return true;
         }
         return false;
     }
-    bool operator>(rational val) {
+    bool operator>(rational_t val) {
         if (numer * val.denom > val.numer * denom) {
             return true;
         }
         return false;
     }
-    bool operator<(rational val) {
+    bool operator<(rational_t val) {
         if (numer * val.denom < val.numer * denom) {
             return true;
         }
         return false;
     }
-    bool operator>=(rational val) {
+    bool operator>=(rational_t val) {
         if (numer * val.denom >= val.numer * denom) {
             return true;
         }
         return false;
     }
-    bool operator<=(rational val) {
+    bool operator<=(rational_t val) {
         if (numer * val.denom <= val.numer * denom) {
             return true;
         }
         return false;
     }
     
-    rational& operator++() {
+    rational_t& operator++() {
         numer += denom;
         return *this;
     }
-    rational operator++(int) {
-        rational oldval = *this;
+    rational_t operator++(int) {
+        rational_t oldval = *this;
         numer += denom;
         return oldval;
     }
-    rational& operator--() {
+    rational_t& operator--() {
         numer -= denom;
         return *this;
     }
-    rational operator--(int) {
-        rational oldval = *this;
+    rational_t operator--(int) {
+        rational_t oldval = *this;
         numer -= denom;
         return oldval;
     }
 
-    friend std::istream& operator>>(std::istream& os, rational& val);
-    friend std::ostream& operator<<(std::ostream& os, const rational& val);
+    friend std::istream& operator>>(std::istream& os, rational_t& val);
+    friend std::ostream& operator<<(std::ostream& os, const rational_t& val);
 
 private:
     long numer, denom;
@@ -151,19 +151,19 @@ private:
     }
 };
 
-std::istream& operator>>(std::istream& is, rational& val) {
+std::istream& operator>>(std::istream& is, rational_t& val) {
     long num = 0, den = 0;
     is >> num >> den;
     val.numer = num;
     val.set_denom(den);
     return is;
 }
-std::ostream& operator<<(std::ostream& os, const rational& val) {
+std::ostream& operator<<(std::ostream& os, const rational_t& val) {
     return os << val.numer << '/' << val.denom;
 }
 
 int main() {
-    rational a(1, 2), b(5, 8), c;
+    rational_t a(1, 2), b(5, 8), c;
     std::cout << a << ' ' << b << ' ' << c << std::endl;
     std::cin >> c;
     std::cout << c << std::endl;
@@ -177,7 +177,7 @@ int main() {
     if (a <= b) {
         std::cout << "b" << std::endl;
     }
-    rational d = b;
+    rational_t d = b;
     std::cout << d << std::endl;
     std::cout << --a << ' ' << b++ << ' ';
     std::cout << b << std::endl;

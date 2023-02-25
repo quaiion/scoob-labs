@@ -78,8 +78,7 @@ typedef std::vector<worker_t> brigade_t;
 typedef std::vector<std::thread> thrvec_t;
 
 static inline brigade_t form_brigade(const unsigned nppl) {
-	brigade_t brigade{};
-	brigade.reserve(nppl);
+	brigade_t brigade(nppl);
 	std::ofstream *logfile = new std::ofstream;
 	logfile->open(default_logfile_name, std::ios::out);
 	for (unsigned i = 0; i < nppl; ++i) {
@@ -87,16 +86,15 @@ static inline brigade_t form_brigade(const unsigned nppl) {
 		unsigned wage{};
 		unsigned long wslry{};
 		std::cin >> wname >> wage >> wslry;
-		brigade.push_back(worker_t(wname, wage, wslry, logfile));
+		brigade.at(i) = worker_t(wname, wage, wslry, logfile);
 	}
 	return brigade;
 }
 
 static inline thrvec_t start_shift(brigade_t &brigade, const unsigned nppl) {
-	thrvec_t thrvec{};
-	thrvec.reserve(nppl);
+	thrvec_t thrvec(nppl);
 	for (unsigned i = 0; i < nppl; ++i) {
-		thrvec.push_back(std::thread([&]() {
+		thrvec.at(i) = std::thread([&]() {
 			worker_t worker = brigade.at(i);
 			while (true) {
 				try {
@@ -107,7 +105,7 @@ static inline thrvec_t start_shift(brigade_t &brigade, const unsigned nppl) {
 					break;
 				}
 			}
-		}));
+		});
 	}
 	return thrvec;
 }

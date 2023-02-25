@@ -6,12 +6,15 @@
 #include <exception>
 #include <stdexcept>
 #include <thread>
+#include <mutex>
 
 constexpr unsigned default_age = 21U;
 constexpr unsigned long default_slry = 500UL;
-constexpr unsigned long min_slry = 100UL;
+constexpr unsigned long min_slry = 101UL;
 constexpr char default_name[] = "виталик";
 constexpr char default_logfile_name[] = "work.log";
+
+std::mutex mutex;
 
 class worker_t {
 public:
@@ -55,17 +58,21 @@ public:
 	}
 
 	void do_work() {
+		mutex.lock();
 		(*logfile) << name << std::setw(16) << std::right << age << \
 			std::setw(8) << std::right << slry << std::endl;
+		mutex.unlock();
 		if (slry < min_slry) {
 			throw std::underflow_error("no money no cookies bro");
 		}
 		slry -= 1UL;
 	}
 	void report_stop() {
+		mutex.lock();
 		(*logfile) << name << \
 			" stopped working, starting a socialistic party..." << \
 			std::endl;
+		mutex.unlock();
 	}
 private:
 	unsigned age;
@@ -78,7 +85,8 @@ typedef std::vector<worker_t> brigade_t;
 typedef std::vector<std::thread> thrvec_t;
 
 static inline brigade_t form_brigade(const unsigned nppl) {
-	brigade_t brigade(nppl);
+	brigade_t brigade{};
+	brigade.reserve(nppl);
 	std::ofstream *logfile = new std::ofstream;
 	logfile->open(default_logfile_name, std::ios::out);
 	for (unsigned i = 0; i < nppl; ++i) {
@@ -86,15 +94,16 @@ static inline brigade_t form_brigade(const unsigned nppl) {
 		unsigned wage{};
 		unsigned long wslry{};
 		std::cin >> wname >> wage >> wslry;
-		brigade.at(i) = worker_t(wname, wage, wslry, logfile);
+		brigade.push_back(worker_t(wname, wage, wslry, logfile));
 	}
 	return brigade;
 }
 
 static inline thrvec_t start_shift(brigade_t &brigade, const unsigned nppl) {
-	thrvec_t thrvec(nppl);
+	thrvec_t thrvec{};
+	thrvec.reserve(nppl);
 	for (unsigned i = 0; i < nppl; ++i) {
-		thrvec.at(i) = std::thread([&]() {
+		thrvec.push_back(std::thread([&]() {
 			worker_t worker = brigade.at(i);
 			while (true) {
 				try {
@@ -105,7 +114,7 @@ static inline thrvec_t start_shift(brigade_t &brigade, const unsigned nppl) {
 					break;
 				}
 			}
-		});
+		}));
 	}
 	return thrvec;
 }

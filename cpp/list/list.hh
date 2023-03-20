@@ -23,10 +23,16 @@ class list {
 private:
         unsigned long size_;
 
-        class node {
-        private:
-                friend class list<T>;
-
+        /**
+         * We guarantee that outer user will not ever get access to
+         * any list<T>::node instance - all possible node* pointers
+         * are private and the typename itself is private. Thus there
+         * is no need to create a private section in list<T>::node,
+         * making some members unusable only for list<T> and
+         * list<T>::iterator classes - just to make them node's
+         * friends two lines below to grant them access to needed members.
+         */
+        struct node {
                 node *next = nullptr;
                 node *prev = nullptr;
                 T data;
@@ -35,7 +41,6 @@ private:
                                                           next(next_),
                                                           prev(prev_),
                                                           data(data_) {}
-        public:
                 node() = default;
         };
 
@@ -66,7 +71,7 @@ public:
         }
         list(const std::vector<T>& vect) : list() {
                 std::for_each(vect.cbegin(), vect.cend(),
-                              [](auto elem) { push_back(elem); });
+                              [this](auto elem) { push_back(elem); });
         }
         ~list() {
                 assert(head != nullptr && tail != nullptr
@@ -86,6 +91,8 @@ public:
 
         class iterator {
         private:
+                friend iterator list<T>::make_it(node *nd);
+
                 node *nd = nullptr;
                 node *pe = nullptr;
                 iterator(node *nd_, node *pe_) : nd(nd_), pe(pe_) {}
@@ -96,7 +103,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to dereference");
-                                return T();     // there might be a better solution
                         }
                         return nd->data;
                 }
@@ -118,7 +124,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to perform +=");
-                                return *this;
                         }
                         if (shft >= 0) {
                                 for (int i = 0; i < shft && nd != pe;
@@ -140,7 +145,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to perform -=");
-                                return end();           // somehow this compiles, need to figure out how
                         }
                         if (shft >= 0) {
                                 for (int i = 0; i < shft && nd != nullptr;
@@ -162,7 +166,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to perform +");
-                                return *this;
                         }
                         iterator it = *this;
                         return (it += shft);
@@ -171,7 +174,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to perform -");
-                                return *this;
                         }
                         iterator it = *this;
                         return (it -= shft);
@@ -180,7 +182,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to increment");
-                                return *this;
                         }
                         if (nd != pe) {
                                 nd = nd->next;
@@ -191,7 +192,6 @@ public:
                         if (nd == nullptr || pe == nullptr) {
                                 throw std::invalid_argument("invalid iterator \
                                                             to decrement");
-                                return *this;
                         }
                         nd = nd->prev;
                         if (nd == nullptr) {
@@ -301,7 +301,6 @@ T list<T>::pop_back() {
         if (empty()) {
                 assert(head == pastend && tail == pastend);
                 throw std::underflow_error("tail popped empty");
-                return T();                     // there might be a better solution
         }
         assert(tail->next == pastend && pastend->prev == tail);
         T temp = tail->data;                    // maybe should use value assignment here
@@ -325,7 +324,6 @@ T list<T>::pop_front() {
         if (empty()) {
                 assert(head == pastend && tail == pastend);
                 throw std::underflow_error("head popped empty");
-                return T();                     // there might be a better solution
         }
         assert(tail->next == pastend && pastend->prev == tail);
         T temp = head->data;                    // maybe should use value assignment here
@@ -347,7 +345,6 @@ typename list<T>::iterator list<T>::insert(iterator pos, const T& data_) {
         assert(head->prev == nullptr && pastend->next == nullptr);
         if (pos == pastend) {
                 throw std::range_error("inserted after past-end");
-                return end();
         }
         assert(tail->next == pastend && pastend->prev == tail);
         pos->nd->next->prev = new node(data_, pos->nd->next, pos->nd);
@@ -366,7 +363,6 @@ typename list<T>::iterator list<T>::erase(iterator pos) {
         assert(head->prev == nullptr && pastend->next == nullptr);
         if (pos == pastend) {
                 throw std::range_error("erased past-end node");
-                return end();
         }
         assert(tail->next == pastend && pastend->prev == tail);
         size_ -= 1;

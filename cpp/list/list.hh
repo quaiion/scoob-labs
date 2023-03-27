@@ -92,6 +92,8 @@ public:
         class iterator {
         private:
                 friend iterator list<T>::make_it(node *nd);
+                friend iterator list<T>::insert(iterator pos, const T& data_);
+                friend iterator list<T>::erase(iterator pos);
 
                 node *nd = nullptr;
                 node *pe = nullptr;
@@ -343,17 +345,17 @@ typename list<T>::iterator list<T>::insert(iterator pos, const T& data_) {
         assert(head != nullptr && tail != nullptr
                 && pastend != nullptr);
         assert(head->prev == nullptr && pastend->next == nullptr);
-        if (pos == pastend) {
+        if (pos.nd == pastend) {
                 throw std::range_error("inserted after past-end");
         }
         assert(tail->next == pastend && pastend->prev == tail);
-        pos->nd->next->prev = new node(data_, pos->nd->next, pos->nd);
-        pos->nd->next = pos->nd->next->prev;
-        if (pos->nd == tail) {
-                tail = pos->nd->next;
+        pos.nd->next->prev = new node(data_, pos.nd->next, pos.nd);
+        pos.nd->next = pos.nd->next->prev;
+        if (pos.nd == tail) {
+                tail = pos.nd->next;
         }
         size_ += 1;
-        return make_it(pos->nd->next->next);
+        return make_it(pos.nd->next->next);
 }
 
 template<typename T>
@@ -361,7 +363,7 @@ typename list<T>::iterator list<T>::erase(iterator pos) {
         assert(head != nullptr && tail != nullptr
                 && pastend != nullptr);
         assert(head->prev == nullptr && pastend->next == nullptr);
-        if (pos == pastend) {
+        if (pos.nd == pastend) {
                 throw std::range_error("erased past-end node");
         }
         assert(tail->next == pastend && pastend->prev == tail);
@@ -371,17 +373,17 @@ typename list<T>::iterator list<T>::erase(iterator pos) {
                 return end();
         }
         assert(head != tail);
-        if (pos->nd == head) {
+        if (pos.nd == head) {
                 head = head->next;
         } else {
-                pos->nd->prev->next = pos->nd->next;
-                if (pos->nd == tail) {
+                pos.nd->prev->next = pos.nd->next;
+                if (pos.nd == tail) {
                         tail = tail->prev;
                 }
         }
-        pos->nd->next->prev = pos->nd->prev;
-        iterator it = make_it(pos->nd->next);
-        delete pos->nd;
+        pos.nd->next->prev = pos.nd->prev;
+        iterator it = make_it(pos.nd->next);
+        delete pos.nd;
         return it;
 }
 
